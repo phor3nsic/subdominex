@@ -40,16 +40,22 @@ Install 📡
 - [gospider](https://github.com/jaeles-project/gospider)
 - [csprecon](https://github.com/edoardottt/csprecon)
 
+### Clone:
+
+```console
+git clone https://github.com/phor3nsic/subdominex
+```
+
 Examples 💡
 ----------
 
 ### Single target:
-```bash
+```console
 ./subdominex.sh example.com
 ```
 
 ### For multi targets:
-```bash
+```console
 for x in $(cat targets.txt);do ./subdominex.sh $x;done
 ```
 
