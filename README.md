@@ -23,3 +23,4 @@ for x in $(cat targets.txt);do ./frogy.sh $x;done
 - shuffledns
 - httpx
 - gospider
+- csprecon
