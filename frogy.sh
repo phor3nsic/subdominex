@@ -59,6 +59,9 @@ sublist3r -d $domain_name -o sublister_output.txt &> /dev/null
 ### Findomain Enum
 findomain -t $domain_name -q >> output/$cdir/findomain.txtls
 
+## subscraper
+subscraper -d $domain_name -silent -o output/$cdir/subscraper.txtls
+
 #### Brute subdomains
 shuffledns -d $domain_name -w wordlist/subdomains-top1million-5000.txt -r wordlist/resolvers.txt -o output/$cdir/dnstemp.txtls &> /dev/null
 
@@ -78,6 +81,7 @@ fi
 
 ### Housekeeping
 cat output/$cdir/chaos.txtls | anew all.txtls
+cat output/$cdir/subscraper.txtls | anew all.txtls
 cat output/$cdir/subfinder.txtls | anew all.txtls
 cat output/$cdir/amass.txtls | anew all.txtls
 cat output/$cdir/wayback.txtls |anew all.txtls
