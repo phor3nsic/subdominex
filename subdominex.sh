@@ -111,7 +111,7 @@ mv $cdir.master output/$cdir/master
 sed -i 's/<br>/\n/g' output/$cdir/master
 
 ### Recursive subdomain search
-subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
+subfinder -l output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
 
 cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
@@ -132,7 +132,7 @@ cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f
 
 ### CSP recon
 csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
-httpx -dL output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
+httpx -l output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
 mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
