@@ -54,7 +54,7 @@ assetfinder --subs-only $domain_name | sort | uniq >> output/$cdir/assetfinder.t
 curl -s "https://crt.sh/?q="$domain_name"&output=json" | jq -r ".[].name_value" | sed 's/*.//g' | anew >> output/$cdir/whois.txtls
 
 ### Sublist3r Enum
-python3 Sublist3r/sublist3r.py -d $domain_name -o sublister_output.txt &> /dev/null
+sublist3r -d $domain_name -o sublister_output.txt &> /dev/null
 
 ### Findomain Enum
 findomain -t $domain_name -q >> output/$cdir/findomain.txtls
