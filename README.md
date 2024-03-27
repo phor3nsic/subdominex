@@ -6,6 +6,7 @@
 <h4 align="center">Domain Asset Identification Tool</h4>
 
 <h6 align="center"> Coded with 💙 by ph0r3nsic </h6>
+<h6 align="center"> With help of <a href="https://github.com/xen00rw">xen00rw</a></h6>
 
 <p align="center">
 
