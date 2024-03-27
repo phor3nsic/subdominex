@@ -1,14 +1,14 @@
-# NewFrogy
+# Subdominex
 _Content Discovery_
 
 ### Single target:
 ```bash
-./frogy.sh $x
+./subdominex.sh $x
 ```
 
 ### For multi targets:
 ```bash
-for x in $(cat targets.txt);do ./frogy.sh $x;done
+for x in $(cat targets.txt);do ./subdominex.sh $x;done
 ```
 
 ### Required Tools:

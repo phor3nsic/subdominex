@@ -1,10 +1,19 @@
 #!/bin/bash
+banner="
 
+   ____     __      __           _             
+  / __/_ __/ /  ___/ /__  __ _  (_)__  _____ __
+ _\ \/ // / _ \/ _  / _ \/  ' \/ / _ \/ -_) \ /
+/___/\_,_/_.__/\_,_/\___/_/_/_/_/_//_/\__/_\_\ 
+                                               
+
+"
+echo $banner
 ### Helper
 if [ $# -eq 0 ]
   then
-    echo -e "Dominio não inserido"
-    echo -e "Metódo de uso: ./frogy.sh example.com"
+    echo -e "[!] Domain not found!"
+    echo -e "[i] Used: ./subdominex.sh example.com"
     exit
 fi
 
@@ -23,19 +32,19 @@ else
 fi
 if [[ -d output/$cdir ]]
 then
-        echo -e "Criando o diretório '$org' para armazenar os resultados na pasta 'output'..."
+        echo -e "[i] Creating the '$org' directory to store the results in the 'output' folder..."
         rm -r -f output/$cdir
 else
-        echo -e "Criando o diretório '$org' para armazenar os resultados na pasta 'output'..."
+        echo -e "[i] Creating the '$org' directory to store the results in the 'output' folder..."
         mkdir output/$cdir
 fi
 
+echo -e "[i] Starting enumeration..."
 
 ### Subfinder Enum
 subfinder -d $domain_name --all --silent >> output/$cdir/subfinder.txtls
 
 ### Chaos API KEY
-
 chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls
 
 ### Amass Enum
@@ -103,23 +112,23 @@ subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfin
 cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
 ## httpx get footprint
-httpx -silent -l output/$cdir/master -p $webports -nc -title -status-code -content-length -content-type -ip -cname -cdn -location -favicon -jarm -o output/$cidir/fingerprint.txt
+httpx -silent -l output/$cdir/master -p $webports -nc -title -status-code -content-length -content-type -ip -cname -cdn -location -favicon -jarm -o output/$cdir/fingerprint.txt
 
 ## Get urls
-cat output/$cidir/fingerprint.txt | awk '{print $1}' | anew output/$cidr/urls.txt
+cat output/$cdir/fingerprint.txt | awk '{print $1}' | anew output/$cdir/urls.txt
 
 ## Gospider new subdomains
-gospider -S output/$cidr/urls.txt -o output/$cdir/spider
+gospider -S output/$cdir/urls.txt -o output/$cdir/spider
 
 ### get urls
-cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output/$cidr/urls.txt
+cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output/$cdir/urls.txt
 
 ### get subdomains
 cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f 3 | anew output/$cdir/master
 
 ## CSP recon
-csprecon -l output/$cidr/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
-httpx -dL output/$cdir/csprecon.txtls -silent | anew output/$cidr/urls.txt
+csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
+httpx -dL output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
 mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
