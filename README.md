@@ -10,3 +10,16 @@ _Content Discovery_
 ```bash
 for x in $(cat targets.txt);do ./frogy.sh $x;done
 ```
+
+### Required Tools:
+
+- subfinder
+- assetfinder
+- amass
+- chaos
+- sublist3r
+- findomain
+- subscraper
+- shuffledns
+- httpx
+- gospider

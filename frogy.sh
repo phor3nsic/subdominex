@@ -94,21 +94,34 @@ rm output/$cdir/dnstemp.txtls
 echo "www.$domain_name" |anew all.txtls
 echo "$domain_name" |anew all.txtls
 cat all.txtls | tr '[:upper:]' '[:lower:]'| anew | grep -v "*." | grep -v " "|grep -v "@" | grep "\." >> $cdir.master
-mv $cdir.master output/$cdir.master
-sed -i 's/<br>/\n/g' output/$cdir.master
+mv $cdir.master output/$cdir/master
+sed -i 's/<br>/\n/g' output/$cdir/master
 
 ## Recursive subdomain search
-subfinder -dL output/$cdir.master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
+subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
 
-cat output/$cdir/subfinder-rec.txtls | anew output/$cdir.master
+cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
 ## httpx get footprint
-httpx -silent -l output/$cdir.master -p $webports -nc -title -status-code -content-length -content-type -ip -cname -cdn -location -favicon -jarm -o output/$cidir.master.fingerprint.txt
+httpx -silent -l output/$cdir/master -p $webports -nc -title -status-code -content-length -content-type -ip -cname -cdn -location -favicon -jarm -o output/$cidir/fingerprint.txt
 
 ## Get urls
-cat output/$cidir.master.fingerprint.txt | awk '{print $1}' | anew output/$cdir.master.urls.txt
+cat output/$cidir/fingerprint.txt | awk '{print $1}' | anew output/$cidr/urls.txt
+
+## Gospider new subdomains
+gospider -S output/$cidr/urls.txt -o output/$cdir/spider
+
+### get urls
+cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output/$cidr/urls.txt
+
+### get subdomains
+cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f 3 | anew output/$cdir/master
+
+## CSP recon
+csprecon -l output/$cidr/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
+httpx -dL output/$cdir/csprecon.txtls -silent | anew output/$cidr/urls.txt
+mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
-rm -r -f output/$cdir
 
 echo "[+] Done recon for $domain_name"
