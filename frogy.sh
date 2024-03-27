@@ -39,7 +39,7 @@ subfinder -d $domain_name --all --silent >> output/$cdir/subfinder.txtls
 chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls
 
 ### Amass Enum
-amass enum -passive -norecursive -nolocaldb -noalts -d $domain_name >> output/$cdir/amass.txtls &
+amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
 
 ### WaybackEngine Enum
 curl -sk "http://web.archive.org/cdx/search/cdx?url=*."$domain_name"&output=txt&fl=original&collapse=urlkey&page=" | awk -F / '{gsub(/:.*/, "", $3); print $3}' | anew | sort -u >> output/$cdir/wayback.txtls
