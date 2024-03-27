@@ -1,19 +1,23 @@
 #!/bin/bash
-banner="
 
-   ____     __      __           _             
-  / __/_ __/ /  ___/ /__  __ _  (_)__  _____ __
- _\ \/ // / _ \/ _  / _ \/  ' \/ / _ \/ -_) \ /
-/___/\_,_/_.__/\_,_/\___/_/_/_/_/_//_/\__/_\_\ 
-                                               
+### Colors
+yellow='\033[1;33m'
+white='\033[1;97m'
+blue='\033[1;34m'
+red='\033[0;31m'
+green='\033[0;32m'
+reset='\033[0m'
 
-"
-echo -e $banner
+### Banner
+printf "$green"
+cat banner.txt
+printf "$reset"
+
 ### Helper
 if [ $# -eq 0 ]
   then
-    echo -e "[!] Domain not found!"
-    echo -e "[i] Used: ./subdominex.sh example.com"
+    printf "$red[!] Domain not found!$reset\n" 
+    printf "$yellow[i] Used: ./subdominex.sh example.com$reset\n"
     exit
 fi
 
@@ -32,10 +36,10 @@ else
 fi
 if [[ -d output/$cdir ]]
 then
-        echo -e "[i] Creating the '$org' directory to store the results in the 'output' folder..."
+        printf "$blu[i] Creating the '$org' directory to store the results in the 'output' folder...$reset\n"
         rm -r -f output/$cdir
 else
-        echo -e "[i] Creating the '$org' directory to store the results in the 'output' folder..."
+        echo -e "$blu[i] Creating the '$org' directory to store the results in the 'output' folder...$reset\n"
         mkdir output/$cdir
 fi
 
@@ -68,10 +72,10 @@ sublist3r -d $domain_name -o sublister_output.txt &> /dev/null
 ### Findomain Enum
 findomain -t $domain_name -q >> output/$cdir/findomain.txtls
 
-## subscraper
+### Subscraper Enum
 subscraper -d $domain_name -silent -o output/$cdir/subscraper.txtls
 
-#### Brute subdomains
+### Brute subdomains
 shuffledns -d $domain_name -w wordlist/subdomains-top1million-5000.txt -r wordlist/resolvers.txt -o output/$cdir/dnstemp.txtls &> /dev/null
 
 ### Checking existance of files
@@ -106,31 +110,31 @@ cat all.txtls | tr '[:upper:]' '[:lower:]'| anew | grep -v "*." | grep -v " "|gr
 mv $cdir.master output/$cdir/master
 sed -i 's/<br>/\n/g' output/$cdir/master
 
-## Recursive subdomain search
+### Recursive subdomain search
 subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
 
 cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
-## httpx get footprint
+### httpx to get footprint
 httpx -silent -l output/$cdir/master -p $webports -nc -title -status-code -content-length -content-type -ip -cname -cdn -location -favicon -jarm -o output/$cdir/fingerprint.txt
 
-## Get urls
+### Get urls
 cat output/$cdir/fingerprint.txt | awk '{print $1}' | anew output/$cdir/urls.txt
 
-## Gospider new subdomains
+### Gospider enum new subdomains
 gospider -S output/$cdir/urls.txt -o output/$cdir/spider
 
-### get urls
+### Get urls
 cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output/$cdir/urls.txt
 
-### get subdomains
+### Get subdomains
 cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f 3 | anew output/$cdir/master
 
-## CSP recon
+### CSP recon
 csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
 httpx -dL output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
 mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
 
-echo "[+] Done recon for $domain_name"
+printf "$yellow[+] Done recon for $domain_name $reset\n"
