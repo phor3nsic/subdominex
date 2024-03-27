@@ -8,7 +8,7 @@ banner="
                                                
 
 "
-echo $banner
+echo -e $banner
 ### Helper
 if [ $# -eq 0 ]
   then
