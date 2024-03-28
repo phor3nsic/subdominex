@@ -46,13 +46,16 @@ fi
 echo -e "[i] Starting enumeration..."
 
 ### Subfinder Enum
-subfinder -d $domain_name --all --silent >> output/$cdir/subfinder.txtls
+subfinder -d $domain_name -all -silent >> output/$cdir/subfinder.txtls
 
 ### Chaos API KEY
-chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls
+if [ -z $CHAOS_KEY];
+then printf "[i] Missing Chaos key, moving to the next\n";
+else chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls;
+fi
 
 ### Amass Enum
-amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
+$amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
 
 ### WaybackEngine Enum
 curl -sk "http://web.archive.org/cdx/search/cdx?url=*."$domain_name"&output=txt&fl=original&collapse=urlkey&page=" | awk -F / '{gsub(/:.*/, "", $3); print $3}' | anew | sort -u >> output/$cdir/wayback.txtls
@@ -61,7 +64,7 @@ curl -sk "http://web.archive.org/cdx/search/cdx?url=*."$domain_name"&output=txt&
 curl -s "https://dns.bufferover.run/dns?q=."$domain_name"" | grep $domain_name | awk -F, '{gsub("\"", "", $2); print $2}' | anew >> output/$cdir/bufferover.txtls
 
 ### AssetFinder Enum
-assetfinder --subs-only $domain_name | sort | uniq >> output/$cdir/assetfinder.txtls
+assetfinder -subs-only $domain_name | sort | uniq >> output/$cdir/assetfinder.txtls
 
 ### Certificate Enum
 curl -s "https://crt.sh/?q="$domain_name"&output=json" | jq -r ".[].name_value" | sed 's/*.//g' | anew >> output/$cdir/whois.txtls
@@ -73,7 +76,7 @@ sublist3r -d $domain_name -o sublister_output.txt &> /dev/null
 findomain -t $domain_name -q >> output/$cdir/findomain.txtls
 
 ### Subscraper Enum
-subscraper -d $domain_name -silent -o output/$cdir/subscraper.txtls
+python3 subscraper/subscraper.py -d $domain_name -silent -o output/$cdir/subscraper.txtls
 
 ### Brute subdomains
 shuffledns -d $domain_name -w wordlist/subdomains-top1million-5000.txt -r wordlist/resolvers.txt -o output/$cdir/dnstemp.txtls &> /dev/null
@@ -111,7 +114,7 @@ mv $cdir.master output/$cdir/master
 sed -i 's/<br>/\n/g' output/$cdir/master
 
 ### Recursive subdomain search
-subfinder -l output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
+subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
 
 cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
