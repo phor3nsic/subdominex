@@ -20,14 +20,10 @@ go install -v github.com/edoardottt/csprecon/cmd/csprecon@latest
 mv ~/go/bin/* /usr/bin/
 
 #Installing Sublist3r
-git clone https://github.com/aboul3la/Sublist3r.git
-cd Sublist3r
-pip3 install -r requirements.txt
-chmod +x sublist3r.py
-python3 setup.py install
-sed -i 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/python3/g' sublist3r.py
-cp sublist3r.py /usr/bin/sublist3r
-cd .. && rm -rf Sublist3r/
+pip3 install git+https://github.com/aboul3la/Sublist3r.git
+
+#Installing Subscraper
+pip3 install git+https://github.com/m8sec/subscraper.git
 
 #Installing Findomain
 curl -LO https://github.com/findomain/findomain/releases/latest/download/findomain-linux-i386.zip
@@ -42,9 +38,3 @@ cd massdns
 make
 cp bin/massdns /usr/bin
 cd .. && rm -rf massdns/
-
-#Installing Subscraper
-git clone https://github.com/m8sec/subscraper
-cd subscraper
-pip3 install -r requirements.txt
-cd ..

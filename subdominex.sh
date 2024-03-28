@@ -48,14 +48,14 @@ echo -e "[i] Starting enumeration..."
 ### Subfinder Enum
 subfinder -d $domain_name -all -silent >> output/$cdir/subfinder.txtls
 
-### Chaos API KEY
-if [ -z $CHAOS_KEY];
-then printf "[i] Missing Chaos key, moving to the next\n";
+### Chaos API KEY Check and run
+if [ -z $CHAOS_KEY ];
+then printf "[i] Missing Chaos key, moving to the next recon...\n";
 else chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls;
 fi
 
 ### Amass Enum
-$amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
+amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
 
 ### WaybackEngine Enum
 curl -sk "http://web.archive.org/cdx/search/cdx?url=*."$domain_name"&output=txt&fl=original&collapse=urlkey&page=" | awk -F / '{gsub(/:.*/, "", $3); print $3}' | anew | sort -u >> output/$cdir/wayback.txtls
@@ -76,7 +76,7 @@ sublist3r -d $domain_name -o sublister_output.txt &> /dev/null
 findomain -t $domain_name -q >> output/$cdir/findomain.txtls
 
 ### Subscraper Enum
-python3 subscraper/subscraper.py -d $domain_name -silent -o output/$cdir/subscraper.txtls
+subscraper -d $domain_name -silent -o output/$cdir/subscraper.txtls
 
 ### Brute subdomains
 shuffledns -d $domain_name -w wordlist/subdomains-top1million-5000.txt -r wordlist/resolvers.txt -o output/$cdir/dnstemp.txtls &> /dev/null
@@ -134,10 +134,10 @@ cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output
 cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f 3 | anew output/$cdir/master
 
 ### CSP recon
-csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
+csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls -silent
 httpx -l output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
 mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
 
-printf "$yellow[+] Done recon for $domain_name $reset\n"
+printf "$green[+] Done recon for $domain_name $reset\n"
