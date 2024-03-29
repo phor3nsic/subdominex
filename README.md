@@ -26,7 +26,29 @@
 Install 📡
 ----------
 
-### Required Tools:
+### Clone:
+
+```console
+git clone https://github.com/phor3nsic/subdominex
+```
+
+### Installation
+
+```console
+cd subdominex && chmod +x install.sh
+sudo ./install.sh
+```
+
+### P.S.
+```console
+Chaos tool from project discovery expects an key in order to use the API.
+
+If you have one key, set it on the environmenet variables:
+
+export CHAOS_KEY=<key>
+```
+
+### Used Tools:
 
 - [subfinder](https://github.com/projectdiscovery/subfinder)
 - [assetfinder](https://github.com/tomnomnom/assetfinder)
@@ -39,12 +61,6 @@ Install 📡
 - [httpx](https://github.com/projectdiscovery/httpx)
 - [gospider](https://github.com/jaeles-project/gospider)
 - [csprecon](https://github.com/edoardottt/csprecon)
-
-### Clone:
-
-```console
-git clone https://github.com/phor3nsic/subdominex
-```
 
 Examples 💡
 ----------
