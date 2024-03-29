@@ -46,10 +46,13 @@ fi
 echo -e "[i] Starting enumeration..."
 
 ### Subfinder Enum
-subfinder -d $domain_name --all --silent >> output/$cdir/subfinder.txtls
+subfinder -d $domain_name -all -silent >> output/$cdir/subfinder.txtls
 
-### Chaos API KEY
-chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls
+### Chaos API KEY Check and run
+if [ -z $CHAOS_KEY ];
+then printf "[i] Missing Chaos key, moving to the next recon...\n";
+else chaos -silent -d $domain_name -key $CHAOS_KEY | anew output/$cdir/chaos.txtls;
+fi
 
 ### Amass Enum
 amass enum -passive -norecursive -d $domain_name >> output/$cdir/amass.txtls &
@@ -61,7 +64,7 @@ curl -sk "http://web.archive.org/cdx/search/cdx?url=*."$domain_name"&output=txt&
 curl -s "https://dns.bufferover.run/dns?q=."$domain_name"" | grep $domain_name | awk -F, '{gsub("\"", "", $2); print $2}' | anew >> output/$cdir/bufferover.txtls
 
 ### AssetFinder Enum
-assetfinder --subs-only $domain_name | sort | uniq >> output/$cdir/assetfinder.txtls
+assetfinder -subs-only $domain_name | sort | uniq >> output/$cdir/assetfinder.txtls
 
 ### Certificate Enum
 curl -s "https://crt.sh/?q="$domain_name"&output=json" | jq -r ".[].name_value" | sed 's/*.//g' | anew >> output/$cdir/whois.txtls
@@ -111,7 +114,7 @@ mv $cdir.master output/$cdir/master
 sed -i 's/<br>/\n/g' output/$cdir/master
 
 ### Recursive subdomain search
-subfinder -l output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
+subfinder -dL output/$cdir/master -recursive -all -silent -o output/$cdir/subfinder-rec.txtls
 
 cat output/$cdir/subfinder-rec.txtls | anew output/$cdir/master
 
@@ -131,10 +134,10 @@ cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | anew output
 cat output/$cdir/spider/* | grep "\[subdomains" | awk '{print $3}' | cut -d / -f 3 | anew output/$cdir/master
 
 ### CSP recon
-csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls
+csprecon -l output/$cdir/urls.txt -d $domain_name -o output/$cdir/csprecon.txtls -silent
 httpx -l output/$cdir/csprecon.txtls -silent | anew output/$cdir/urls.txt
 mv output/$cdir "output/$(date +"%Y%m%d%H%M%S")_$cdir"
 
 rm all.txtls
 
-printf "$yellow[+] Done recon for $domain_name $reset\n"
+printf "$green[+] Done recon for $domain_name $reset\n"
