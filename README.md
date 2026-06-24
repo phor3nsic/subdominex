@@ -41,9 +41,9 @@ sudo ./install.sh
 
 ### P.S.
 ```console
-Chaos tool from project discovery expects an key in order to use the API.
+The Chaos tool from ProjectDiscovery requires an API key.
 
-If you have one key, set it on the environmenet variables:
+If you have a key, set it as an environment variable:
 
 export CHAOS_KEY=<key>
 ```
